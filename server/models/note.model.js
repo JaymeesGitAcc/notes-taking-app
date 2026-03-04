@@ -1,30 +1,35 @@
 import mongoose from "mongoose"
 
-const noteSchema = mongoose.Schema({
+const noteSchema = mongoose.Schema(
+  {
     title: {
-        type: String,
+      type: String,
+      default: "",
     },
     content: {
-        type: String
+      type: String,
+      default: "",
     },
     tags: {
-        type: [String],
-        default: []
+      type: [String],
+      default: [],
     },
     pinned: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     color: {
-        type: String,
-    }
-}, {timestamps: true})
+      type: String,
+      default: "#fff",
+    },
+  },
+  { timestamps: true },
+)
 
 const Note = mongoose.model("Note", noteSchema)
 
 export default Note
-

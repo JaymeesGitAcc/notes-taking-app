@@ -1,8 +1,9 @@
 import User from "../models/user.model.js"
 import { sendError, sendSuccess } from "../utils/response.js"
+import jwt from "jsonwebtoken"
 
-const generateToken = async (id) => {
-  return await jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" })
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" })
 }
 
 const registerUser = async (req, res) => {
@@ -45,6 +46,7 @@ const registerUser = async (req, res) => {
       message: "User Created successfully",
     })
   } catch (error) {
+    console.log("registerUser Error :: ", error)
     return sendError(res, "Internal Server error", 500, {
       status: "failure",
       message: "Internal Server error",
@@ -61,29 +63,29 @@ const loginUser = async (req, res) => {
         status: "failure",
       })
     }
-  
+
     if (!password) {
       return sendError(res, "Password is required", 401, {
         status: "failure",
       })
     }
-  
-    const user = await User.findOne({email})
-  
-    if(!user) {
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
       return sendError(res, "Email not found", 404, {
-          status: "failure", 
-          message: "Email not found"
+        status: "failure",
+        message: "Email not found",
       })
     }
-  
+
     const isPasswordCorrect = await user.matchPasswords(password)
-  
-    if(!isPasswordCorrect) {
+
+    if (!isPasswordCorrect) {
       return sendError(res, "Incorrect Password", 401)
     }
-  
-    const token = await generateToken(user._id)
+
+    const token = generateToken(user._id)
 
     return sendSuccess(res, "User Logged In successfully", 200, {
       token,
@@ -94,6 +96,7 @@ const loginUser = async (req, res) => {
       },
     })
   } catch (error) {
+    console.log("loginUser Error:: ", error)
     return sendError(res, "Internal Server Error", 500)
   }
 }
